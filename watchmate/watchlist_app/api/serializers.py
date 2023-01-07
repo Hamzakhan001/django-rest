@@ -1,34 +1,44 @@
 from rest_framework import serializers
-from watchlist_app.models import Movie
+from watchlist_app.models import WatchList,StreamPlatform
 
 
 
 
 #model serializer
-class MovieSerializer(serializers.ModelSerializer):
+class WatchListSerializer(serializers.ModelSerializer):
     #adding field directly in serializers
     len_names=serializers.SerializerMethodField()
     class Meta:
-        model=Movie
+        model=WatchList
         # fields=['id','name','description']
         exclude=['active']
         
-    def get_len_name(self,object):
-        length=len(object.name)
-        return length
+class StreamPlatformSerializer(serializers.ModelSerializer):
+    #Nested serializer
+    # watchlist=WatchListSerializer(many=True, read_only=True)
+    watchlist=serializers.HyperlinkedRelatedField(many=True,read_only=True,view_name='movie-detail')
     
-    #validate current object level
-    def validat(self,data):
-        if data['title'] == data['description']:
-            raise serializers.ValidationError("Title and description cant be same")
+    class Meta:
+        model=StreamPlatform
+        fields="__all__"
+    
+        
+    # def get_len_name(self,object):
+    #     length=len(object.name)
+    #     return length
+    
+    # #validate current object level
+    # def validat(self,data):
+    #     if data['title'] == data['description']:
+    #         raise serializers.ValidationError("Title and description cant be same")
     
     
-    #field level validation
-    def validat_name(self,value):
-        if(len(value)<2):
-            raise serializers.ValidationError("Name is too short")
-        else:   
-            return value
+    # #field level validation
+    # def validat_name(self,value):
+    #     if(len(value)<2):
+    #         raise serializers.ValidationError("Name is too short")
+    #     else:   
+    #         return value
     
 
 #  #field level validation in serializer
